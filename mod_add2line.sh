@@ -1,6 +1,7 @@
 #!/bin/sh
 
-mod=$1
+mod=`find -name $1`
+echo $mod
 func=$2
 offset=$3
 
