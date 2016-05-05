@@ -10,28 +10,29 @@ import re
 # 3) HEIGHT=$3
 # 4) DEV=/dev/media0
 # 5) PAD=0
-# 6) ENTITY=1
 # 7) CODE=RGB888_1X24
 # 8) VERBOSE=
 def change_sd_fmt(params, mdev):
-    print params
     print "==========================================="
-    print params['name'] + " SD: OLD FORMAT:"
+    print "%s, Pad %d" % (params['name'], params['pad'])
     print "==========================================="
-    print ""
-    cmd = 'sudo media-ctl '+ params['verbose'] +' -d '+ mdev +' --get-v4l2 ' \
-          + params['entity'] +':'+ params['pad']
+    #print params
+
+    # Add quotes in the name
+    name = "\'" + params['name'] + "\'"
+
+    # Print the old format
+    cmd = "sudo media-ctl %s -d %s --get-v4l2 \"%s:%d\"" % (params['verbose'], mdev, name, params['pad'])
     print '>' + cmd
     os.system(cmd)
 
-    cmd = 'sudo media-ctl '+ params['verbose'] +' -d '+ mdev +' -V ' \
-          + params['entity'] +':'+ params['pad'] +'[fmt:'+ params['code'] +'/'+ params['width'] +'x'+ params['height'] +']'
+    # Set the new format
+    cmd = "sudo media-ctl %s -d %s -V \"%s:%s [fmt:%s/%dx%d]\"" % (params['verbose'], mdev, name, params['pad'], params['code'], params['width'], params['height'])
     print '>' + cmd
     os.system(cmd)
 
-    print "-------------------------------------------"
-    print params['name'] + " SD: NEW FORMAT:"
-    cmd = 'sudo media-ctl '+ params['verbose'] +' -d '+ mdev +' --get-v4l2 '+ params['entity'] +':'+ params['pad']
+    # Print the new format
+    cmd = "sudo media-ctl %s -d %s --get-v4l2 \"%s:%d\"" % (params['verbose'], mdev, name, params['pad'])
     print '>' + cmd
     output = commands.getstatusoutput(cmd)
     print output[1]
@@ -44,7 +45,7 @@ def change_sd_fmt(params, mdev):
     new_fmt = re.search(':(.*)/(.*)]', output[1])
     if not new_fmt or \
         new_fmt.group(1) != params['code'] or \
-        new_fmt.group(2) != params['width'] + 'x' + params['height']:
+        new_fmt.group(2) != "%dx%d" % (params['width'], params['height']):
 
         print ""
         print "ERR: Could not apply format"
@@ -58,17 +59,14 @@ def change_sd_fmt(params, mdev):
 # 5) FORMAT=SBGGR8
 def change_vid_fmt(params):
     print "==========================================="
-    print params['name'] + " VID: OLD FORMAT:"
+    print params['name']
     print "==========================================="
-    print ""
+
     cmd = 'yavta --enum-formats '+ params['dev']
     print '>' + cmd
     os.system(cmd)
 
-    print "-------------------------------------------"
-    print params['name'] + " VID: NEW FORMAT:"
-    cmd = 'yavta -f '+ params['fmt'] + \
-              ' -s '+ params['width'] +'x'+ params['height'] +' '+ params['dev']
+    cmd = "yavta -f %s -s %dx%d %s" % (params['fmt'], params['width'], params['height'], params['dev'])
     print '>' + cmd
     output = commands.getstatusoutput(cmd)
     print output[1]
@@ -81,7 +79,7 @@ def change_vid_fmt(params):
     new_fmt = re.search('Video format: (.*?) .*? (.*?) ', output[1])
     if not new_fmt or \
         new_fmt.group(1) != params['fmt'] or \
-        new_fmt.group(2) != params['width'] + 'x' + params['height']:
+        new_fmt.group(2) != "%dx%d" % (params['width'], params['height']):
 
         print ""
         print "ERR: Could not apply format"
@@ -90,119 +88,99 @@ def change_vid_fmt(params):
     print ""
 
 
-
-
-# ENT_SEN_A=1
-# ENT_SEN_B=2
-# ENT_DEB_A=3
-# ENT_DEB_B=4
-# ENT_CAP_0=5
-# ENT_CAP_1=6
-# ENT_INP=7
-# ENT_SCA=8
-# ENT_CAP_RGB_YUV=9
-
-WIDTH=640
-HEIGHT=480
+WIDTH=300
+HEIGHT=400
 SCALER_MULT=3
-BAYER_FMT='SBGGR8'
+BAYER_FMT='SBGGR8_1X8'
 DEBAYER_FMT='RGB888_1X24'
 CAP_DEBAYER_FMT='RGB24'
-CAP_BAYER_FMT=BAYER_FMT
+CAP_BAYER_FMT='SBGGR8'
 MDEV='/dev/media0'
 
 pads= [ \
         {
             'name':     'Sensor A',
-            'entity':   '1',
-            'pad':      '0',
-            'width':    str(WIDTH),
-            'height':   str(HEIGHT),
+            'pad':      0,
+            'width':    WIDTH,
+            'height':   HEIGHT,
             'code':     BAYER_FMT,
             'verbose':  ''
         },
         {
             'name':     'Sensor B',
-            'entity':   '2',
-            'pad':      '0',
-            'width':    str(WIDTH),
-            'height':   str(HEIGHT),
+            'pad':      0,
+            'width':    WIDTH,
+            'height':   HEIGHT,
             'code':     BAYER_FMT,
             'verbose':  ''
         },
         {
             'name':     'Debayer A',
-            'entity':   '3',
-            'pad':      '0',
-            'width':    str(WIDTH),
-            'height':   str(HEIGHT),
+            'pad':      0,
+            'width':    WIDTH,
+            'height':   HEIGHT,
             'code':     BAYER_FMT,
             'verbose':  ''
         },
         {
             'name':     'Debayer A',
-            'entity':   '3',
-            'pad':      '1',
-            'width':    str(WIDTH),
-            'height':   str(HEIGHT),
+            'pad':      1,
+            'width':    WIDTH,
+            'height':   HEIGHT,
             'code':     DEBAYER_FMT,
             'verbose':  ''
         },
         {
             'name':     'Debayer B',
-            'entity':   '4',
-            'pad':      '0',
-            'width':    str(WIDTH),
-            'height':   str(HEIGHT),
+            'pad':      0,
+            'width':    WIDTH,
+            'height':   HEIGHT,
             'code':     BAYER_FMT,
             'verbose':  ''
         },
         {
             'name':     'Debayer B',
-            'entity':   '4',
-            'pad':      '1',
-            'width':    str(WIDTH),
-            'height':   str(HEIGHT),
+            'pad':      1,
+            'width':    WIDTH,
+            'height':   HEIGHT,
             'code':     DEBAYER_FMT,
             'verbose':  ''
         },
         {
             'name':     'Raw Capture 0',
             'dev':      '/dev/video0',
-            'width':    str(WIDTH),
-            'height':   str(HEIGHT),
+            'width':    WIDTH,
+            'height':   HEIGHT,
             'fmt':      CAP_BAYER_FMT
         },
         {
             'name':     'Raw Capture 1',
             'dev':      '/dev/video1',
-            'width':    str(WIDTH),
-            'height':   str(HEIGHT),
+            'width':    WIDTH,
+            'height':   HEIGHT,
             'fmt':      CAP_BAYER_FMT
         },
         {
             'name':     'Scaler',
-            'entity':   '8',
-            'pad':      '0',
-            'width':    str(WIDTH),
-            'height':   str(HEIGHT),
+            'pad':      0,
+            'width':    WIDTH,
+            'height':   HEIGHT,
             'code':     DEBAYER_FMT,
             'verbose':  ''
         },
         {
             'name':     'Scaler',
-            'entity':   '8',
-            'pad':      '1',
-            'width':    str(WIDTH*SCALER_MULT),
-            'height':   str(HEIGHT*SCALER_MULT),
+            'pad':      1,
+            'width':    WIDTH*SCALER_MULT,
+            'height':   HEIGHT*SCALER_MULT,
             'code':     DEBAYER_FMT,
             'verbose':  ''
         },
         {
             'name':     'RGB/YUV Capture',
             'dev':      '/dev/video2',
-            'width':    str(WIDTH*SCALER_MULT),
-            'height':   str(HEIGHT*SCALER_MULT),
+            'width':    WIDTH*SCALER_MULT,
+            'height':   HEIGHT*SCALER_MULT,
             'fmt':      CAP_DEBAYER_FMT
         },
     ]
@@ -215,6 +193,9 @@ for pad in pads:
     else:
         change_vid_fmt(pad)
 
+print "==========================================="
+print "SUMMARY"
+print "==========================================="
 cmd = 'sudo media-ctl -p -d ' + MDEV
 print '>' + cmd
 os.system(cmd)
