@@ -88,8 +88,8 @@ def change_vid_fmt(params):
     print ""
 
 
-WIDTH=300
-HEIGHT=400
+WIDTH=640
+HEIGHT=480
 SCALER_MULT=3
 BAYER_FMT='SBGGR8_1X8'
 DEBAYER_FMT='RGB888_1X24'
