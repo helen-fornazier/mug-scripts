@@ -5,8 +5,11 @@ echo $mod
 func=$2
 offset=$3
 
-addr=`nm $mod | grep $func | grep '^[0-9a-f]* [tT]' | awk '{ print "0x"$1 }'`
-addr=`printf 0x%x $(($addr + $offset))`
-echo $addr
+nm $mod | grep "${func}$" | grep '^[0-9a-f]* [tT]'
+addr=`nm $mod | grep "${func}$" | grep '^[0-9a-f]* [tT]' | awk '{ print "0x"$1 }'`
 
-addr2line -a -e $mod -i $addr
+for ad in $addr; do
+    echo "Symbol found at $ad, applying offset $offset"
+    ad=`printf 0x%x $(($ad + $offset))`
+    addr2line -pifae $mod $ad
+done

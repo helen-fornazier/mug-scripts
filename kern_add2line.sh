@@ -1,3 +1,3 @@
 #!/bin/sh
 
-addr2line -f -e /home/helen/caneca/opw/staging/vmlinux $1
+addr2line -pifae vmlinux $1
