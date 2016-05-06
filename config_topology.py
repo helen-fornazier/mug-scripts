@@ -28,7 +28,8 @@ def change_sd_fmt(params, mdev):
     os.system(cmd)
 
     # Set the new format
-    cmd = "sudo media-ctl %s -d %s -V \"%s:%s [fmt:%s/%dx%d]\"" % (params['verbose'], mdev, name, params['pad'], params['code'], params['width'], params['height'])
+    cmd = "sudo media-ctl %s -d %s -V \"%s:%s [fmt:%s/%dx%d field:%s]\"" % \
+            (params['verbose'], mdev, name, params['pad'], params['code'], params['width'], params['height'], params['field'])
     print '>' + cmd
     os.system(cmd)
 
@@ -46,7 +47,7 @@ def change_sd_fmt(params, mdev):
     new_fmt = re.search(':(.*)/(.*)]', output[1])
     if not new_fmt or \
         new_fmt.group(1) != params['code'] or \
-        new_fmt.group(2) != "%dx%d" % (params['width'], params['height']):
+        new_fmt.group(2) != "%dx%d field:%s" % (params['width'], params['height'], params['field']):
 
         print ""
         print "ERR: Could not apply format"
@@ -63,11 +64,13 @@ def change_vid_fmt(params):
     print params['name']
     print "==========================================="
 
+    # Print the old format
     cmd = 'yavta --enum-formats '+ params['dev']
     print '>' + cmd
     os.system(cmd)
 
-    cmd = "yavta -f %s -s %dx%d %s" % (params['fmt'], params['width'], params['height'], params['dev'])
+    # Set the new format
+    cmd = "yavta -f %s -s %dx%d --field %s %s" % (params['fmt'], params['width'], params['height'], params['field'], params['dev'])
     print '>' + cmd
     output = commands.getstatusoutput(cmd)
     print output[1]

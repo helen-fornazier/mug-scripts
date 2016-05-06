@@ -13,6 +13,7 @@ pads= [ \
             'width':    WIDTH,
             'height':   HEIGHT,
             'code':     BAYER_FMT,
+            'field':    'none',
             'verbose':  ''
         },
         {
@@ -21,6 +22,7 @@ pads= [ \
             'width':    WIDTH,
             'height':   HEIGHT,
             'code':     BAYER_FMT,
+            'field':    'none',
             'verbose':  ''
         },
         {
@@ -29,6 +31,7 @@ pads= [ \
             'width':    WIDTH,
             'height':   HEIGHT,
             'code':     BAYER_FMT,
+            'field':    'none',
             'verbose':  ''
         },
         {
@@ -37,6 +40,7 @@ pads= [ \
             'width':    WIDTH,
             'height':   HEIGHT,
             'code':     DEBAYER_FMT,
+            'field':    'none',
             'verbose':  ''
         },
         {
@@ -45,6 +49,7 @@ pads= [ \
             'width':    WIDTH,
             'height':   HEIGHT,
             'code':     BAYER_FMT,
+            'field':    'none',
             'verbose':  ''
         },
         {
@@ -53,6 +58,7 @@ pads= [ \
             'width':    WIDTH,
             'height':   HEIGHT,
             'code':     DEBAYER_FMT,
+            'field':    'none',
             'verbose':  ''
         },
         {
@@ -60,6 +66,7 @@ pads= [ \
             'dev':      '/dev/video0',
             'width':    WIDTH,
             'height':   HEIGHT,
+            'field':    'none',
             'fmt':      CAP_BAYER_FMT
         },
         {
@@ -67,6 +74,7 @@ pads= [ \
             'dev':      '/dev/video1',
             'width':    WIDTH,
             'height':   HEIGHT,
+            'field':    'none',
             'fmt':      CAP_BAYER_FMT
         },
         {
@@ -75,6 +83,7 @@ pads= [ \
             'width':    WIDTH,
             'height':   HEIGHT,
             'code':     DEBAYER_FMT,
+            'field':    'none',
             'verbose':  ''
         },
         {
@@ -83,6 +92,7 @@ pads= [ \
             'width':    WIDTH*SCALER_MULT,
             'height':   HEIGHT*SCALER_MULT,
             'code':     DEBAYER_FMT,
+            'field':    'none',
             'verbose':  ''
         },
         {
@@ -90,6 +100,7 @@ pads= [ \
             'dev':      '/dev/video2',
             'width':    WIDTH*SCALER_MULT,
             'height':   HEIGHT*SCALER_MULT,
+            'field':    'none',
             'fmt':      CAP_DEBAYER_FMT
         },
     ]
