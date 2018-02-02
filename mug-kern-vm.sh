@@ -33,8 +33,7 @@ function create_img {
 		exit 1
 	fi
 
-	sudo vmdebootstrap --verbose --image=${IMG} --size=1g --distribution=${DIST} --grub --enable-dhcp --package=openssh-server
-	sudo chown $USER:$USER $IMG
+	sudo vmdebootstrap --verbose --image=${IMG} --size=5g --distribution=${DIST} --grub --enable-dhcp --package=openssh-server,xauth,xwayland --owner=$USER
 }
 
 function config_img {
@@ -54,6 +53,9 @@ function config_img {
 	fi
 	mkdir ${MNT}/root/.ssh
 	cat ~/.ssh/kern-vm-key.pub >> ${MNT}/root/.ssh/authorized_keys
+
+	# Enable X forward
+	touch ${MNT}/root/.Xauthority
 
 	vm_umount
 }
