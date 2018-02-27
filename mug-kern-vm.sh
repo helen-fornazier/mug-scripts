@@ -13,6 +13,14 @@ MNT=../deb-${DIST}-vm-mount.dir
 SHARE=../vm-share.dir
 KERNEL=arch/x86_64/boot/bzImage
 
+# PACKAGES TO INCLUDE IN THE IMG
+# Base configuration
+PKGS=openssh-server,xauth,xwayland
+# Dev tools
+PKGS=${PKGS},git,vim
+# v4l-utils build dependencies
+PKGS=${PKGS},dh-autoreconf,autotools-dev,doxygen,gettext,graphviz,libasound2-dev,libtool,libjpeg-dev,qtbase5-dev,libudev-dev,libx11-dev,pkg-config,udev,qt5-default
+
 function vm_mount {
 	if [[ ! -d ${MNT} ]]; then
 		echo "Creating folder ${MNT} to mount the image when required"
@@ -33,7 +41,7 @@ function create_img {
 		exit 1
 	fi
 
-	sudo vmdebootstrap --verbose --image=${IMG} --size=5g --distribution=${DIST} --grub --enable-dhcp --package=openssh-server,xauth,xwayland --owner=$USER
+	sudo vmdebootstrap --verbose --image=${IMG} --size=5g --distribution=${DIST} --grub --enable-dhcp --package=${PKGS} --owner=$USER
 }
 
 function config_img {
@@ -106,7 +114,7 @@ case "${1-}" in
 		config_img
 		;;
 	*)
-		echo "Usage: $0 {mount|umount|install|launch|launch-native|creat-img}"
+		echo "Usage: $0 {mount|umount|install|launch|launch-native|create-img}"
 		echo "Requirements: libguestfs-tools kvm vmdebootstrap"
 		exit 1
 esac
