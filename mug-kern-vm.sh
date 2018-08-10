@@ -100,7 +100,7 @@ case "${1-}" in
 		;;
 	install)
 		vm_mount
-		make modules_install install INSTALL_MOD_PATH=$MNT INSTALL_PATH=$MNT
+		make modules_install install INSTALL_MOD_PATH=$MNT INSTALL_PATH=$MNT/boot
 		vm_umount
 		;;
 	launch)
