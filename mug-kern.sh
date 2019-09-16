@@ -33,14 +33,17 @@ case "${1-}" in
 		echo "Grub entry $krelease"
 
 		;;
-	virtme)
+	virtme-install)
+		build=../kbuild/virtme
+		make KBUILD_OUTPUT=$build -j9 && \
+		make -C $build INSTALL_MOD_PATH=. modules_install
+		;;
+	virtme-run)
 		build=../kbuild/virtme
 		krelease=$(make KBUILD_OUTPUT=$build kernelrelease | grep -v directory)
-		make KBUILD_OUTPUT=../kbuild/virtme -j9 && \
-		make -C $build INSTALL_MOD_PATH=. modules_install && \
-		virtme-run --graphics --pwd --kdir=$build --mdir=$build/lib/modules/$krelease
+		virtme-run --pwd --rwdir /tmp --kdir=$build --mdir=$build/lib/modules/$krelease
 		;;
 	*)
-		echo "Usage: $0 {virtme|rockpi-install|samus-install}"
+		echo "Usage: $0 {virtme-install|virtme-run|virtme-vimc-test|rockpi-install|samus-install}"
 		exit 1
 esac
