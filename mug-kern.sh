@@ -10,6 +10,56 @@ if [[ ${PWD##*/} != "linux" ]]; then
 fi
 
 case "${1-}" in
+	rpi3-install)
+		# rpi3 b+ bcm2837-rpi-3-b-plus.dts
+		build=../kbuild/rpi3
+		KERNEL=pipoca.zImage
+		DTB=bcm2837-rpi-3-b-plus.dtb
+		#SD=/dev/mmcblk0
+		SD=/dev/sda
+		MNT=/tmp/rpi-mnt
+		BOOT=$MNT/boot
+		ROOTFS=$MNT/rootfs
+
+		mkdir -p $BOOT
+		mkdir -p $ROOTFS
+		if ! mount | grep -q "$MNT"; then
+			#sudo umount ${SD}p1 || true
+			#sudo umount ${SD}p2 || true
+			sudo umount ${SD}1 || true
+			sudo umount ${SD}2 || true
+			echo "Mounting rpi rootfs:"
+			#sudo mount ${SD}p1 $BOOT
+			#sudo mount ${SD}p2 $ROOTFS
+			sudo mount ${SD}1 $BOOT
+			sudo mount ${SD}2 $ROOTFS
+		fi
+
+		make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- KBUILD_OUTPUT=$build -j9 zImage modules dtbs && \
+		sudo cp $build/arch/arm/boot/zImage $BOOT/$KERNEL && \
+		sudo cp $build/arch/arm/boot/dts/$DTB $BOOT/ && \
+		sudo make -C $build modules_install INSTALL_MOD_PATH=$ROOTFS
+
+		#sudo cp $build/arch/arm/boot/dts/overlays/*.dtb* ${BOOT}/overlays/ || true
+		#sudo cp $build/arch/arm/boot/dts/overlays/README ${BOOT}/overlays/ || true
+
+		# Do this only once
+		if ! grep -q "kernel=" $BOOT/config.txt; then
+			echo "kernel=$KERNEL" | sudo tee -a $BOOT/config.txt
+		fi
+
+		if ! grep -q "device_tree=" $BOOT/config.txt; then
+			echo "device_tree=$DTB" | sudo tee -a $BOOT/config.txt
+		fi
+
+		sudo grep "kernel=" $BOOT/config.txt
+		sudo grep "device_tree=" $BOOT/config.txt
+
+		#sudo umount ${SD}p1
+		#sudo umount ${SD}p2
+		sudo umount ${SD}1
+		sudo umount ${SD}2
+		;;
 	rockpi-install)
 		build=../kbuild/rockpi-4
 		MNT=/home/koike/mug/nfsshare/arm64_rootfs
@@ -67,6 +117,6 @@ case "${1-}" in
 		virtme-run --script-dir /tmp/virtme-scripts $virtme_args | tee virtme.log
 		;;
 	*)
-		echo "Usage: $0 {virtme-install|virtme-run|virtme-test-media|rockpi-install|samus-install}"
+		echo "Usage: $0 {virtme-install|virtme-run|virtme-test-media|rockpi-install|samus-install|rpi3-install}"
 		exit 1
 esac
