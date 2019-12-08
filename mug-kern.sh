@@ -11,26 +11,21 @@ fi
 
 case "${1-}" in
 	rpi3-install)
-		# rpi3 b+ bcm2837-rpi-3-b-plus.dts
 		build=../kbuild/rpi3
 		KERNEL=pipoca.zImage
 		DTB=bcm2837-rpi-3-b-plus.dtb
-		#SD=/dev/mmcblk0
-		SD=/dev/sda
+		SD=/dev/mmcblk0p
+		#SD=/dev/sda
 		MNT=/tmp/rpi-mnt
 		BOOT=$MNT/boot
 		ROOTFS=$MNT/rootfs
 
-		mkdir -p $BOOT
-		mkdir -p $ROOTFS
 		if ! mount | grep -q "$MNT"; then
-			#sudo umount ${SD}p1 || true
-			#sudo umount ${SD}p2 || true
 			sudo umount ${SD}1 || true
 			sudo umount ${SD}2 || true
 			echo "Mounting rpi rootfs:"
-			#sudo mount ${SD}p1 $BOOT
-			#sudo mount ${SD}p2 $ROOTFS
+			mkdir -p $BOOT
+			mkdir -p $ROOTFS
 			sudo mount ${SD}1 $BOOT
 			sudo mount ${SD}2 $ROOTFS
 		fi
@@ -55,8 +50,6 @@ case "${1-}" in
 		sudo grep "kernel=" $BOOT/config.txt
 		sudo grep "device_tree=" $BOOT/config.txt
 
-		#sudo umount ${SD}p1
-		#sudo umount ${SD}p2
 		sudo umount ${SD}1
 		sudo umount ${SD}2
 		;;
